@@ -1,5 +1,25 @@
-# Game-Of-Life
+# Game Of Life
 Simplistic Python implementation of Conway's Game of Life.
+
+# Usage
+Clone the repository using:
+```
+git clone https://github.com/piyushagade/Game-Of-Life.git
+```
+
+Tweak the universe (culture) by changing the system variable in **game_of_life.py**
+The changeable varialbles are:
+
+1. width, height (Obvious)
+2. life_of_culture (Number of maximum generation to be simulated)
+3. age_of_culture (Current age of culture)
+4. no_of_seeds  (Number of first generation organisms)
+
+Simulate the culture using:
+```
+cd Game-Of-Life-master
+python game_of_life.py
+```
 
 # Dependencies
 1. matplotlib
