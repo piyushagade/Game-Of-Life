@@ -1,38 +1,51 @@
 '''
 Author: Piyush Agade
 
-+++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
          Conway's Game of Life
 
-+++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 '''
 
 from numpy import array
 from matplotlib import pyplot as plt
 import random as r
+from images2gif import writeGif
+from PIL import Image
+import os
+import glob
 
-# System variables
-width = 5
-height = 5
+# ***********************************************************************
+# Changeable system variables
+width = 15
+height = 15
 culture = array([[0 for i in range(width)] for j in range(height)])
 
 life_of_culture = 10
 age_of_culture = 0
 
-no_of_seeds = 16
+no_of_seeds = 168
 
+# **********************************************************************
 seeds = []
 for _ in range(no_of_seeds):
     seeds.append((r.randint(0, height - 1), r.randint(0, width - 1)))
 
+population = 0
 
 def simulate():
     next_gen = culture
     for _ in range(width):
         for __ in range(height):
-            u = next_gen[_ - 1, __]
-            l = next_gen[_, __ - 1]
+            if _ == 0 or __ == 0:
+                if _ == 0:
+                    u = 0
+                if __ == 0:
+                    l = 0
+            else:
+                u = next_gen[_ - 1, __]
+                l = next_gen[_, __ - 1]
             try:
                 r = next_gen[_, __+ 1]
             except IndexError:
@@ -68,41 +81,25 @@ def plant_seeds(seeds, culture):
         culture[seed[0], seed[1]] = 1
     return culture
 
-def members():
-    next_gen = culture
-    for _ in range(width):
-        for __ in range(height):
-             try:
-                 u = culture[_ - 1, __]
-             except IndexError as ie:
-                 u = 0
-             try:
-                 l = culture[_, __ - 1]
-             except IndexError as ie:
-                 l = 0
-             try:
-                 r = culture[_, __+ 1]
-             except IndexError as ie:
-                 r = 0
-             try:
-                 d = culture[_ + 1, __]
-             except IndexError as ie:
-                 d = 0
-
-             immediate_neighbours = [u, l, r, d]
-             no_of_alive_neighbours = sum(immediate_neighbours)
-
 
 def print_culture(culture):
     plt.figure(age_of_culture)
     plt.imshow(culture, interpolation = 'nearest')
-    plt.show()
-    # print culture
+    plt.title('Generation: ' + str(age_of_culture) + '/' + str(life_of_culture) + '\nPopulation: ' + str(sum(sum(culture))))
+    plt.savefig('png/'+ str(age_of_culture))
+    # plt.show()
+    writeGIF()
 
+def writeGIF():
+    file_names = sorted((fn for fn in os.listdir('png') if fn.endswith('.png')), key=lambda s: (s[5:]))
+    import imageio
+    readImages = []
+    for file_names in file_names:
+        readImages.append(imageio.imread('./png/' + file_names))
+    imageio.mimsave('./gif/animation.gif', readImages, fps = 1)
 
 if __name__ == '__main__':
     culture = plant_seeds(seeds, culture)
-    members()
     print_culture(culture)
 
     while age_of_culture != life_of_culture:
