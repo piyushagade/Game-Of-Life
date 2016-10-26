@@ -20,6 +20,21 @@ Simulate the culture using:
 cd Game-Of-Life
 python game_of_life.py
 ```
+# Output
+The program generates PNG files in 'png' directory, which can be accessed using:
+```
+cd png
+0.png
+1.png
+.
+.
+.
+```
+and a GIF animation in 'gif' folder, which can be accessed using:
+```
+cd gif
+animation.gif
+```
 
 # Dependencies
 1. matplotlib
