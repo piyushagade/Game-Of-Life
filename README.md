@@ -17,7 +17,7 @@ The changeable varialbles are:
 
 Simulate the culture using:
 ```
-cd Game-Of-Life-master
+cd Game-Of-Life
 python game_of_life.py
 ```
 
