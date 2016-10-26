@@ -31,15 +31,22 @@ def simulate():
     next_gen = culture
     for _ in range(width):
         for __ in range(height):
+            u = next_gen[_ - 1, __]
+            l = next_gen[_, __ - 1]
             try:
-                neighbours = [culture[_ - 1, __ - 1], culture[_ - 0, __ - 1], culture[_ + 1, __ - 1],
-                              culture[_ - 1, __ - 0], culture[_ + 1, __ - 0], culture[_ - 1, __ + 1],
-                              culture[_ + 1, __ - 0], culture[_ + 1, __ + 1]]
-                immediate_neighbours = [culture[_ - 1, __], culture[_, __ - 1],
-                                        culture[_, __ + 1], culture[_ + 1, __]]
-                no_of_alive_neighbours = sum(immediate_neighbours)
-            except IndexError as ie:
-                pass
+                r = next_gen[_, __+ 1]
+            except IndexError:
+                r = 0
+            try:
+                d = next_gen[_ + 1, __]
+            except IndexError:
+                d = 0
+
+            immediate_neighbours = [u, l, r, d]
+            no_of_alive_neighbours = sum(immediate_neighbours)
+
+            # print _,__,next_gen[_,__], immediate_neighbours
+
 
             '''
             Any live cell with fewer than two live neighbours dies, as if caused by under-population.
@@ -85,7 +92,6 @@ def members():
 
              immediate_neighbours = [u, l, r, d]
              no_of_alive_neighbours = sum(immediate_neighbours)
-             print _,__,culture[_,__], immediate_neighbours
 
 
 def print_culture(culture):
