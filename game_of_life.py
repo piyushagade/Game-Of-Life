@@ -3,7 +3,7 @@ Author: Piyush Agade
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-         Conway's Game of Life
+                        Conway's Game of Life
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 '''
@@ -13,24 +13,39 @@ from sys import stdout
 
 from matplotlib import pyplot as plt
 from numpy import array
+import imageio
 
 # ***********************************************************************
-# Changeable system variables
+#                       Changeable system variables
+# ***********************************************************************
+
+# Culture dimensions
 width = 15
 height = 15
-culture = array([[0 for i in range(width)] for j in range(height)])
 
+# Culture behavioral parmaters
 life_of_culture = 10
 age_of_culture = 0
 
 no_of_seeds = 168
 
+# GIF parameters
+fps = 1     # Higher the fs, faster the gif animation will be.
+
+
 # **********************************************************************
+#                       Nothing to be changed below
+# **********************************************************************
+
+culture = array([[0 for i in range(width)] for j in range(height)])
+
 seeds = []
+
 for _ in range(no_of_seeds):
     seeds.append((r.randint(0, height - 1), r.randint(0, width - 1)))
 
 population = 0
+
 
 def simulate():
     next_gen = culture
@@ -45,7 +60,7 @@ def simulate():
                 u = next_gen[_ - 1, __]
                 l = next_gen[_, __ - 1]
             try:
-                r = next_gen[_, __+ 1]
+                r = next_gen[_, __ + 1]
             except IndexError:
                 r = 0
             try:
@@ -83,28 +98,33 @@ def plant_seeds(seeds, culture):
 def print_culture(culture):
     plt.figure(age_of_culture)
     plt.imshow(culture, interpolation = 'nearest')
-    plt.title('Generation: ' + str(age_of_culture) + '/' + str(life_of_culture) + '\nPopulation: ' + str(sum(sum(culture))))
-    plt.savefig('png/'+ str(age_of_culture))
+    plt.title(
+        'Generation: ' + str(age_of_culture) + '/' + str(life_of_culture) + '\nPopulation: ' + str(sum(sum(culture))))
+    plt.savefig('png/' + str(age_of_culture))
     # plt.show()
     writeGIF()
 
+
 def writeGIF():
-    file_names = sorted((fn for fn in os.listdir('png') if fn.endswith('.png')), key=lambda s: (s[5:]))
-    import imageio
+    file_names = sorted((fn for fn in os.listdir('png') if fn.endswith('.png')), key = lambda s: (s[5:]))
     readImages = []
     for file_names in file_names:
         readImages.append(imageio.imread('./png/' + file_names))
         stdout.write("\r%d" % age_of_culture + '/' + str(life_of_culture) + ' generations recorded.')
 
-    imageio.mimsave('./gif/animation.gif', readImages, fps = 1)
+    imageio.mimsave('./gif/animation.gif', readImages, fps = fps)
+
 
 if __name__ == '__main__':
+    #simulate the alphas
     culture = plant_seeds(seeds, culture)
     print_culture(culture)
 
+    # simulate the descendants
     while age_of_culture != life_of_culture:
         culture = simulate()
         age_of_culture += 1
         print_culture(culture)
 
+    # announce completion of the program
     stdout.write("\nGIF generated in ./gif.")
