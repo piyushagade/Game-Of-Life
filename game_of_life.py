@@ -44,7 +44,6 @@ def simulate():
 
             immediate_neighbours = [u, l, r, d]
             no_of_alive_neighbours = sum(immediate_neighbours)
-
             # print _,__,next_gen[_,__], immediate_neighbours
 
 
