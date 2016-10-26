@@ -7,14 +7,12 @@ Author: Piyush Agade
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 '''
-
-from numpy import array
-from matplotlib import pyplot as plt
-import random as r
-from images2gif import writeGif
-from PIL import Image
 import os
-import glob
+import random as r
+from sys import stdout
+
+from matplotlib import pyplot as plt
+from numpy import array
 
 # ***********************************************************************
 # Changeable system variables
@@ -96,6 +94,8 @@ def writeGIF():
     readImages = []
     for file_names in file_names:
         readImages.append(imageio.imread('./png/' + file_names))
+        stdout.write("\r%d" % age_of_culture + '/' + str(life_of_culture) + ' generations recorded.')
+
     imageio.mimsave('./gif/animation.gif', readImages, fps = 1)
 
 if __name__ == '__main__':
@@ -106,3 +106,5 @@ if __name__ == '__main__':
         culture = simulate()
         age_of_culture += 1
         print_culture(culture)
+
+    stdout.write("\nGIF generated in ./gif.")
