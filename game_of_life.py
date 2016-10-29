@@ -11,6 +11,7 @@ import os
 import random as r
 from sys import stdout
 
+import time
 from matplotlib import pyplot as plt
 from numpy import array
 import imageio
@@ -27,7 +28,7 @@ height = 50
 life_of_culture = 20
 age_of_culture = 0
 
-no_of_seeds = 8868
+no_of_seeds = 1500
 
 # GIF parameters
 fps = 1     # Higher the fs, faster the gif animation will be.
@@ -43,25 +44,28 @@ copies = 1
 
 # 3. Bomb
 
-shape = 'Glider'
+shape = 'mini bomb'
 
 
 # **********************************************************************
 #                       Nothing to be changed below
 # **********************************************************************
 
+deaths = []
+births = []
 temp_x = x
 temp_y = y
-if shape.lower().replace(" ", "") == 'glider':
+shape = shape.lower().replace(" ", "")
+if shape == 'glider':
     for _ in range(copies):
         seeds = ((2+y,1+x),(3+y,2+x),(3+y,3+x),(2+y,3+x),(1+y,3+x))
         x += temp_x
         y += temp_y
-elif shape.lower().replace(" ", "") == 'minibomb':
+elif shape == 'minibomb':
     y = width/2
     x = height/2
     seeds = ((1+y,2+x),(2+y,1+x),(2+y,2+x),(2+y,3+x),(3+y,1+x),(3+y,3+x),(4+y,2+x))
-elif shape.lower().replace(" ", "") == 'bomb':
+elif shape == 'bomb':
     y = width/2
     x = height/2
     seeds = ((1+y,1+x),(2+y,1+x),(3+y,1+x),(4+y,1+x),(5+y,1+x),(1+y,3+x),(5+y,3+x), (1+y,5+x),(2+y,5+x),(3+y,5+x),(4+y,5+x),(5+y,5+x))
@@ -71,7 +75,7 @@ else:
 
 
 culture = array([[0 for i in range(width)] for j in range(height)])
-#
+
 # for _ in range(no_of_seeds):
 #     seeds.append((r.randint(0, height - 1), r.randint(0, width - 1)))
 
@@ -131,10 +135,12 @@ def simulate():
 
             if no_of_alive_neighbours < 2 and culture[_,__] == 1:
                 next_gen[_, __] = 0
+                deaths.append((_,__))
             elif no_of_alive_neighbours in (2,3) and culture[_,__] == 1:
                 next_gen[_, __] = 1
             elif no_of_alive_neighbours > 3 and culture[_,__] == 1:
                 next_gen[_, __] = 0
+                deaths.append((_,__))
             elif (no_of_alive_neighbours == 3) and culture[_,__] == 0:
                 next_gen[_, __] = 1
 
@@ -166,7 +172,7 @@ def print_culture(culture):
     plt.figure(age_of_culture)
     plt.imshow(culture, interpolation = 'nearest')
     plt.title(
-        'Generation: ' + str(age_of_culture) + '/' + str(life_of_culture) + '\nPopulation: ' + str(sum(sum(culture))))
+        'Generation: ' + str(age_of_culture) + '/' + str(life_of_culture) + '\nPopulation: ' + str(sum(sum(culture))) + ', Deaths: ' + str(len(deaths)))
     plt.savefig('png/' + str(age_of_culture))
     # plt.show()
     writeGIF()
@@ -177,12 +183,22 @@ def writeGIF():
     readImages = []
     for file_names in file_names:
         readImages.append(imageio.imread('./png/' + file_names))
-        stdout.write("\r%d" % age_of_culture + '/' + str(life_of_culture) + ' generations recorded.')
+        stdout.write("\r%d" % age_of_culture + '/' + str(life_of_culture) + ' generations simulated.')
 
     imageio.mimsave('./gif/animation.gif', readImages, fps = fps)
 
+def del_old_files():
+    import shutil
+    for root, dirs, files in os.walk('./png'):
+        for f in files:
+            os.unlink(os.path.join(root, f))
+        for d in dirs:
+            shutil.rmtree(os.path.join(root, d))
 
 if __name__ == '__main__':
+    del_old_files()
+    time.sleep(1)
+
     #simulate the alphas
     culture = plant_seeds(seeds, culture)
     print_culture(culture)
@@ -193,9 +209,6 @@ if __name__ == '__main__':
         culture = simulate()
         age_of_culture += 1
         print_culture(culture)
-
-
-
 
     # announce completion of the program
     stdout.write("\nGIF generated in ./gif.")
